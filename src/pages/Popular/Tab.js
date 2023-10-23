@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 // import { fetchPopularRepos } from "../../api/api";
 import { createSearchParams, useNavigate } from "react-router-dom";
+// import { fetchPopularRepos } from "../../api/api";
 import { useGitHubProfile } from "../../contexts/GitHubContext";
 
 const Tab = ({ languages }) => {
   const [disabled, setDisabled] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("All");
-  const [repos, setRepos] = useState([]);
-  const navigate = useNavigate();
 
-  const { fetchRepos } = useGitHubProfile();
+  const navigate = useNavigate();
+  const { fetchPopularRepos } = useGitHubProfile();
 
   const searchQueries = (lang) => {
     navigate({
@@ -18,21 +18,12 @@ const Tab = ({ languages }) => {
     });
   };
 
-  useEffect(() => {
-    fetchRepos(selectedLanguage);
-  }, [selectedLanguage, fetchRepos]);
-
-  // useEffect(() => {
-  //   const fetchRepos = async () => {
-  //     try {
-  //       const data = await fetchPopularRepos(selectedLanguage);
-  //       setRepos(data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchRepos();
-  // }, [selectedLanguage]);
+  useEffect(
+    function () {
+      fetchPopularRepos(selectedLanguage);
+    },
+    [selectedLanguage, fetchPopularRepos]
+  );
 
   const handleClick = (language, bool) => {
     setSelectedLanguage(language);
