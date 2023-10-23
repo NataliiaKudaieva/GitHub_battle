@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext } from "react";
 import { useReducer } from "react";
 import axios from "axios";
-import { getProfile, getRepos } from "../api/api";
+import { getProfile, getRepos } from "../services/githubAPI";
 
 const initialState = {
   error: "",
@@ -11,7 +11,8 @@ const initialState = {
   previewPlayerTwo: {},
   fullProfilePlayerOne: {},
   fullProfilePlayerTwo: {},
-  isLoading: false,
+  isLoading: true,
+  language: "",
   popularRepos: {},
 };
 
@@ -20,7 +21,7 @@ function reducer(state, action) {
     case "loading":
       return {
         ...state,
-        isLoading: true,
+        isLoading: action.payload,
       };
     case "previewPlayerOne/loaded":
       return {
@@ -64,12 +65,18 @@ function reducer(state, action) {
       };
     }
 
+    case "selectedLanguage": {
+      return {
+        ...state,
+        language: action.payload,
+      };
+    }
     case "reset": {
       return { ...state, initialState };
     }
 
     default:
-      throw new Error("error");
+      throw new Error("Unknown action type");
   }
 }
 
@@ -83,6 +90,7 @@ function GitHubProvider({ children }) {
       fullProfilePlayerOne,
       fullProfilePlayerTwo,
       isLoading,
+      language,
       error,
       popularRepos,
     },
@@ -132,23 +140,25 @@ function GitHubProvider({ children }) {
     }
   };
 
-  const fetchRepos = useCallback(async function fetchPopularRepos(
-    language = "All"
-  ) {
-    // dispatch({ type: "loading" });
-    try {
+  const fetchPopularRepos = useCallback(
+    async function fetchPopularRepos(language = "All") {
       if (!language) return;
-      const response = await axios.get(
-        `https://api.github.com/search/repositories?q=stars:>1+language:${language}&sort=desc&type=Repositories`
-      );
-
-      dispatch({ type: "repos/loaded", payload: response.data.items });
-
-      dispatch({ type: "loading", payload: false });
-    } catch (error) {
-      console.log(error.message);
-    }
-  });
+      dispatch({ type: "loading", payload: true });
+      try {
+        const response = await axios.get(
+          `https://api.github.com/search/repositories?q=stars:>1+language:${language}&sort=desc&type=Repositories`
+        );
+        dispatch({ type: "repos/loaded", payload: response.data.items });
+        dispatch({ type: "loading", payload: false });
+      } catch (error) {
+        dispatch({
+          type: "error",
+          payload: `${error.message}. Please try again later`,
+        });
+      }
+    },
+    [language]
+  );
 
   return (
     <GitHubContext.Provider
@@ -161,7 +171,7 @@ function GitHubProvider({ children }) {
         getFullProfileData,
         isLoading,
         popularRepos,
-        fetchRepos,
+        fetchPopularRepos,
         error,
       }}
     >
