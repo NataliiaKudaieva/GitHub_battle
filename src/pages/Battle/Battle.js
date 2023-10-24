@@ -5,28 +5,27 @@ import PlayerPreview from "./PlayerPreview";
 import { Link } from "react-router-dom";
 
 import { useGitHubProfile } from "../../contexts/GitHubContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Loader from "../Popular/Loader";
 
 const Battle = () => {
   const {
     previewPlayerOne,
     previewPlayerTwo,
     getPreviewProfile,
-    fullProfilePlayerOne,
     getFullProfileData,
+    resetProfile,
   } = useGitHubProfile();
+
 
   const handleSubmit = (id, username) => {
     getPreviewProfile(id, username);
     getFullProfileData(id, username);
   };
 
-  const countScores = () => {
-    console.log(fullProfilePlayerOne, "haah");
+  const handleReset = (id) => {
+    console.log(id);
   };
-  countScores();
-
-  const handleReset = (e) => {};
 
   return (
     <div className="home-container">
