@@ -120,6 +120,7 @@ function GitHubProvider({ children }) {
       ]);
 
       const [profile, repo] = data;
+
       dispatch({
         type: `fullProfile${id}/loaded`,
         payload: {
@@ -128,8 +129,9 @@ function GitHubProvider({ children }) {
           followers: profile.followers,
           following: profile.following,
           publicRepos: profile.public_repos,
-          location: profile.location,
-          company: profile.company,
+          location: profile?.location,
+          company: profile?.company,
+          stars: repo[0].stargazers_count,
         },
       });
     } catch (error) {

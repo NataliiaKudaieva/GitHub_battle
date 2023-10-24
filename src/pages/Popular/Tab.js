@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-// import { fetchPopularRepos } from "../../api/api";
+
 import { createSearchParams, useNavigate } from "react-router-dom";
-// import { fetchPopularRepos } from "../../api/api";
+
 import { useGitHubProfile } from "../../contexts/GitHubContext";
 
 const Tab = ({ languages }) => {
