@@ -11,6 +11,9 @@ import Results from "./pages/Battle/Results";
 import Error from "./components/Error";
 import { GitHubProvider } from "./contexts/GitHubContext";
 
+import RepoDetails from "./pages/Popular/RepoDetails";
+import ProfileDetails from "./pages/Battle/ProfileDetails";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -23,7 +26,11 @@ const router = createBrowserRouter([
       {
         path: "popular",
         element: <Popular />,
-        loader: "",
+        errorElement: <Error />,
+      },
+      {
+        path: "popular/:repoID",
+        element: <ProfileDetails />,
       },
       {
         path: "battle",

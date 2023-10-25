@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const PlayerInput = ({ id, label, onSubmit, dispatch }) => {
+const PlayerInput = ({ id, label, onSubmit }) => {
   const [username, setUsername] = useState("");
 
   const handleSubmit = (e) => {
