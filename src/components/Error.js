@@ -1,9 +1,7 @@
 import error_sticker from "../icons/error_sticker.png";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-export default function Error() {
-  const { state: errMessage } = useLocation();
-
+export default function Error({ errMessage }) {
   return (
     <div className="column">
       <h1 className="error">{errMessage}</h1>
