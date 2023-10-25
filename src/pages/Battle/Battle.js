@@ -1,12 +1,9 @@
 /* eslint-disable no-undef */
 import PlayerInput from "./PlayerInput";
 import PlayerPreview from "./PlayerPreview";
-
 import { Link } from "react-router-dom";
-
 import { useGitHubProfile } from "../../contexts/GitHubContext";
-import { useEffect, useState } from "react";
-import Loader from "../Popular/Loader";
+import { useState } from "react";
 
 const Battle = () => {
   const {
@@ -14,54 +11,69 @@ const Battle = () => {
     previewPlayerTwo,
     getPreviewProfile,
     getFullProfileData,
-    resetProfile,
   } = useGitHubProfile();
 
+  const [playerData, setPlayerData] = useState({
+    playerOneName: "",
+    playerTwoName: "",
+    playerOneImage: null,
+    playerTwoImage: null,
+  });
 
   const handleSubmit = (id, username) => {
-    getPreviewProfile(id, username);
-    getFullProfileData(id, username);
+    setPlayerData((prevState) => ({
+      ...prevState,
+      [`${id}Name`]: username,
+      [`${id}Image`]: `https://github.com/${username}.png?size200`,
+    }));
   };
 
+  const { playerOneName, playerTwoName, playerOneImage, playerTwoImage } =
+    playerData;
+
   const handleReset = (id) => {
-    console.log(id);
+    setPlayerData((prevState) => ({
+      ...prevState,
+      [`${id}Name`]: "",
+      [`${id}Image`]: null,
+    }));
   };
 
   return (
     <div className="home-container">
       <div className="row">
-        {previewPlayerOne.playerAvatar ? (
+        {playerOneImage ? (
           <PlayerPreview
-            id="PlayerOne"
-            avatar={previewPlayerOne.playerAvatar}
-            username={previewPlayerOne.playerName}
-            onHandleReset={handleReset}
+            id="playerOne"
+            avatar={playerOneImage}
+            username={playerOneName}
             render={
-              <button className="reset" onClick={handleReset}>
+              <button className="reset" onClick={handleReset("playerOne")}>
                 Reset
               </button>
             }
           />
         ) : (
           <PlayerInput
-            id="PlayerOne"
+            id="playerOne"
             label="Player 1"
             onSubmit={handleSubmit}
           />
         )}
-        {previewPlayerTwo.playerAvatar ? (
+        
+        {playerTwoImage ? (
           <PlayerPreview
-            avatar={previewPlayerTwo.playerAvatar}
-            username={previewPlayerTwo.playerName}
+            avatar={playerTwoImage}
+            username={playerTwoName}
             render={
-              <button className="reset" onClick={(e) => handleReset(e)}>
+              <button className="reset" onClick={handleReset("playerTwo")}>
                 Reset
               </button>
             }
           />
         ) : (
           <PlayerInput
-            id="PlayerTwo"
+            id="playerTwo"
             label="Player 2"
             onSubmit={handleSubmit}
           />

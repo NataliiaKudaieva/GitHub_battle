@@ -4,15 +4,15 @@ import { createContext, useCallback, useContext } from "react";
 import { useReducer } from "react";
 import axios from "axios";
 import { getProfile, getRepos } from "../services/githubAPI";
+import { countScores } from "../helpers/calculateScores";
 
 const initialState = {
   error: "",
-  previewPlayerOne: {},
-  previewPlayerTwo: {},
   fullProfilePlayerOne: {},
   fullProfilePlayerTwo: {},
   isLoading: true,
   language: "",
+  popularRepo: {},
   popularRepos: {},
 };
 
@@ -23,24 +23,6 @@ function reducer(state, action) {
         ...state,
         isLoading: action.payload,
       };
-    case "previewPlayerOne/loaded":
-      return {
-        ...state,
-        previewPlayerOne: {
-          playerAvatar: `https://github.com/${action.payload}.png?size200`,
-          playerName: action.payload,
-        },
-      };
-
-    case "previewPlayerTwo/loaded":
-      return {
-        ...state,
-        previewPlayerTwo: {
-          playerAvatar: `https://github.com/${action.payload}.png?size200`,
-          playerName: action.payload,
-        },
-      };
-
     case "fullProfilePlayerOne/loaded":
       return {
         ...state,
@@ -52,6 +34,13 @@ function reducer(state, action) {
         ...state,
         fullProfilePlayerTwo: action.payload,
       };
+
+    case "popularRepo/loaded":
+      return {
+        ...state,
+        popularRepo: action.payload,
+      };
+
     case "repos/loaded": {
       return {
         ...state,
@@ -85,8 +74,6 @@ const GitHubContext = createContext();
 function GitHubProvider({ children }) {
   const [
     {
-      previewPlayerOne,
-      previewPlayerTwo,
       fullProfilePlayerOne,
       fullProfilePlayerTwo,
       isLoading,
@@ -99,27 +86,21 @@ function GitHubProvider({ children }) {
 
   /*get preview profile info from GitHub API*/
 
-  const getPreviewProfile = async (id, username) => {
-    try {
-      dispatch({ type: `preview${id}/loaded`, payload: username });
-    } catch (error) {
-      dispatch({
-        type: "error",
-        payload: error.message,
-      });
-    }
+  const getPreviewProfile = (id, username) => {
+    dispatch({ type: `preview${id}/loaded`, payload: username });
   };
 
   /*get full profile information from GitHub API*/
   const getFullProfileData = async (id, username) => {
     if (!username) return;
+    dispatch({ type: "loading", payload: true });
     try {
       const data = await Promise.all([
         getProfile(username),
         getRepos(username),
       ]);
 
-      const [profile, repo] = data;
+      const [profile, [repos]] = data;
 
       dispatch({
         type: `fullProfile${id}/loaded`,
@@ -131,9 +112,10 @@ function GitHubProvider({ children }) {
           publicRepos: profile.public_repos,
           location: profile?.location,
           company: profile?.company,
-          stars: repo[0].stargazers_count,
+          score: countScores(profile, repos),
         },
       });
+      dispatch({ type: "loading", payload: false });
     } catch (error) {
       dispatch({
         type: "error",
@@ -165,8 +147,6 @@ function GitHubProvider({ children }) {
   return (
     <GitHubContext.Provider
       value={{
-        previewPlayerOne,
-        previewPlayerTwo,
         getPreviewProfile,
         fullProfilePlayerOne,
         fullProfilePlayerTwo,
