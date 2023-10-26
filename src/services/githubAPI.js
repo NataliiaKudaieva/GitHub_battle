@@ -6,7 +6,7 @@ export const getProfile = async (username) => {
   const res = await axios.get(`https://api.github.com/users/${username}`);
 
   if (!res.ok) {
-    console.log("hbhs");
+    console.log(res.status);
   }
   return res.data;
 };

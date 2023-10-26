@@ -6,12 +6,7 @@ import { useGitHubProfile } from "../../contexts/GitHubContext";
 import { useState } from "react";
 
 const Battle = () => {
-  const {
-    previewPlayerOne,
-    previewPlayerTwo,
-    getPreviewProfile,
-    getFullProfileData,
-  } = useGitHubProfile();
+  const { getFullProfileData } = useGitHubProfile();
 
   const [playerData, setPlayerData] = useState({
     playerOneName: "",
@@ -26,6 +21,8 @@ const Battle = () => {
       [`${id}Name`]: username,
       [`${id}Image`]: `https://github.com/${username}.png?size200`,
     }));
+
+    getFullProfileData(id, username);
   };
 
   const { playerOneName, playerTwoName, playerOneImage, playerTwoImage } =
@@ -60,7 +57,7 @@ const Battle = () => {
             onSubmit={handleSubmit}
           />
         )}
-        
+
         {playerTwoImage ? (
           <PlayerPreview
             avatar={playerTwoImage}
@@ -80,7 +77,7 @@ const Battle = () => {
         )}
       </div>
 
-      {previewPlayerOne.playerAvatar && previewPlayerTwo.playerAvatar ? (
+      {/* {previewPlayerOne.playerAvatar && previewPlayerTwo.playerAvatar ? (
         <Link
           to={{
             pathname: "results",
@@ -94,7 +91,7 @@ const Battle = () => {
         >
           Battle
         </Link>
-      ) : null}
+      ) : null} */}
     </div>
   );
 };
